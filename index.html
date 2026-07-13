@@ -62,10 +62,18 @@
             color: #ffd966;
         }
 
-        /* Search */
+        /* Search & Filter row */
+        .search-filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
         .search-wrap {
+            flex: 1;
             position: relative;
-            margin-bottom: 24px;
+            min-width: 200px;
         }
         .search-wrap i {
             position: absolute;
@@ -93,6 +101,25 @@
         }
         .search-wrap input::placeholder {
             color: #9aabbf;
+        }
+
+        .filter-select {
+            padding: 12px 20px;
+            border-radius: 14px;
+            border: none;
+            background: #fff;
+            font-size: 15px;
+            font-weight: 500;
+            color: #1a2639;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+            outline: 2px solid transparent;
+            cursor: pointer;
+            transition: 0.2s;
+            min-width: 180px;
+        }
+        .filter-select:focus {
+            outline: 2px solid #1a4b6d;
+            box-shadow: 0 6px 18px rgba(26, 75, 109, 0.12);
         }
 
         /* Stats */
@@ -186,7 +213,7 @@
         /* Question item */
         .question-item {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             padding: 10px 24px 10px 24px;
             border-bottom: 1px solid #f0f4fa;
             transition: background 0.12s;
@@ -213,8 +240,14 @@
             opacity: 0.6;
         }
 
-        .company-toggle {
+        .company-toggle-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
             flex-shrink: 0;
+        }
+
+        .company-toggle {
             width: 38px;
             height: 38px;
             display: flex;
@@ -227,7 +260,7 @@
             transition: all 0.2s ease;
             border: none;
             font-size: 16px;
-            margin-top: -2px;
+            position: relative;
         }
         .company-toggle:hover {
             background: #dce6f2;
@@ -244,6 +277,22 @@
         }
         .company-toggle.active i {
             transform: rotate(90deg);
+        }
+
+        .company-count-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 22px;
+            height: 22px;
+            background: #1a4b6d;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 30px;
+            padding: 0 6px;
+            line-height: 1;
+            margin-left: 2px;
         }
 
         .company-list {
@@ -341,6 +390,11 @@
                 height: 34px;
                 font-size: 14px;
             }
+            .company-count-badge {
+                min-width: 18px;
+                height: 18px;
+                font-size: 10px;
+            }
             .topic-header {
                 padding: 14px 16px;
             }
@@ -357,6 +411,13 @@
             .stats {
                 font-size: 13px;
                 gap: 8px 16px;
+            }
+            .search-filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filter-select {
+                width: 100%;
             }
         }
         @media (max-width: 480px) {
@@ -381,29 +442,12 @@
             }
         }
 
-        /* loading skeleton */
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #7a8aa3;
-        }
-        .loading i {
-            font-size: 32px;
-            margin-bottom: 12px;
-            display: block;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
         /* print */
         @media print {
             .company-toggle,
             .scroll-top,
-            .search-wrap {
+            .search-wrap,
+            .filter-select {
                 display: none !important;
             }
             .topic-body {
@@ -436,10 +480,19 @@
             </div>
         </div>
 
-        <!-- Search -->
-        <div class="search-wrap">
-            <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Search questions, topics, or companies..." />
+        <!-- Search & Filter row -->
+        <div class="search-filter-row">
+            <div class="search-wrap">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search questions, topics, or companies..." />
+            </div>
+            <select id="companyCountFilter" class="filter-select">
+                <option value="0">All questions</option>
+                <option value="2">Most asked (2+ companies)</option>
+                <option value="3">Most asked (3+ companies)</option>
+                <option value="5">Most asked (5+ companies)</option>
+                <option value="10">Most asked (10+ companies)</option>
+            </select>
         </div>
 
         <!-- Stats -->
@@ -470,8 +523,8 @@
                 name: "Core Concepts",
                 questions: [
                     { q: "What is Apex? What are its features?", c: ["Co-Forge"] },
-                    { q: "What is the difference between SOQL and SOSL?", c: ["Accenture", "Manras Technologies", "TCS",
-                            "Infosys", "Unisys India"
+                    { q: "What is the difference between SOQL and SOSL?", c: ["Accenture", "Manras Technologies",
+                            "TCS", "Infosys", "Unisys India"
                         ] },
                     { q: "What are governor limits?", c: ["Accenture", "Deloitte", "Nagarro", "Shonet", "TCS",
                             "NTT Data L1"
@@ -494,8 +547,8 @@
                     { q: "What is the difference between Exception and Error?", c: ["Accenture"] },
                     { q: "What is the use of try-catch-finally?", c: ["Accenture"] },
                     { q: "What is the difference between System.debug and log?", c: ["Accenture"] },
-                    { q: "What is Mixed DML Exception and how to handle it?", c: ["Accenture", "Deloitte", "Infosys",
-                            "NTT Data", "Capgemini", "Capgemini L1"
+                    { q: "What is Mixed DML Exception and how to handle it?", c: ["Accenture", "Deloitte",
+                            "Infosys", "NTT Data", "Capgemini", "Capgemini L1"
                         ] },
                     { q: "What are Setup and Non-Setup objects?", c: ["LTI", "NTT Data", "Deloitte"] },
                     { q: "What is Field Integrity Exception?", c: ["Persistent", "EY"] },
@@ -4056,7 +4109,7 @@
                             "Salesforce Technical Consultant R1"
                         ] },
                     { q: "Overall best practices of apex.", c: ["Salesforce Technical Consultant R1"] },
-                    { q: "End of the list",
+                    { q: "I need html js css file where i want all these questions to be listed in a nice advanced simple UI and i want a icon at last of every question upon i click on icon i want all company names ot be displayed. dont miss any questions",
                         c: [] },
                 ]
             }]
@@ -4068,6 +4121,7 @@
         (function() {
             const container = document.getElementById('questionsContainer');
             const searchInput = document.getElementById('searchInput');
+            const filterSelect = document.getElementById('companyCountFilter');
             const scrollBtn = document.getElementById('scrollTopBtn');
 
             let allQuestionsFlat = [];
@@ -4130,15 +4184,19 @@
                             const companies = item.companies || [];
                             companies.forEach(c => companySet.add(c));
                             const compStr = companies.map(c => `<span class="company-tag">${c}</span>`).join('');
+                            const count = companies.length;
                             html += `
-                                <div class="question-item">
+                                <div class="question-item" data-count="${count}">
                                     <div class="question-text">
                                         <span class="q-icon"><i class="fas fa-circle" style="font-size:6px;vertical-align:middle;"></i></span>
                                         ${item.text}
                                     </div>
-                                    <button class="company-toggle" onclick="toggleCompanies(this)" aria-label="Show companies">
-                                        <i class="fas fa-building"></i>
-                                    </button>
+                                    <div class="company-toggle-wrapper">
+                                        <button class="company-toggle" onclick="toggleCompanies(this)" aria-label="Show companies">
+                                            <i class="fas fa-building"></i>
+                                        </button>
+                                        <span class="company-count-badge">${count}</span>
+                                    </div>
                                 </div>
                                 <div class="company-list">
                                     ${compStr}
@@ -4167,48 +4225,20 @@
                     const text = el.querySelector('.question-text')?.textContent?.trim() || '';
                     const topicEl = el.closest('.topic-group');
                     const topic = topicEl?.dataset?.topic || '';
-                    questionElements.push({ el, text, topic });
+                    const count = parseInt(el.dataset.count) || 0;
+                    questionElements.push({ el, text, topic, count });
                 });
 
-                // If search has value, filter
-                if (searchInput.value.trim()) {
-                    filterQuestions(searchInput.value.trim());
+                // If search or filter has value, apply
+                const searchVal = searchInput.value.trim();
+                const filterVal = parseInt(filterSelect.value) || 0;
+                if (searchVal || filterVal > 0) {
+                    filterQuestions(searchVal, filterVal);
                 }
             }
 
-            // ── Toggle topic ──
-            window.toggleTopic = function(header) {
-                const body = header.nextElementSibling;
-                const icon = header.querySelector('.toggle-icon i');
-                const chevron = header.querySelector('.topic-title i');
-                if (body.classList.contains('open')) {
-                    body.classList.remove('open');
-                    icon.className = 'fas fa-chevron-right';
-                    chevron.style.transform = 'rotate(0deg)';
-                } else {
-                    body.classList.add('open');
-                    icon.className = 'fas fa-chevron-down';
-                    chevron.style.transform = 'rotate(90deg)';
-                }
-            };
-
-            // ── Toggle companies ──
-            window.toggleCompanies = function(btn) {
-                const item = btn.closest('.question-item');
-                const list = item.nextElementSibling;
-                if (!list || !list.classList.contains('company-list')) return;
-                const isOpen = list.classList.contains('open');
-                if (isOpen) {
-                    list.classList.remove('open');
-                    btn.classList.remove('active');
-                } else {
-                    list.classList.add('open');
-                    btn.classList.add('active');
-                }
-            };
-
-            // ── Filter ──
-            function filterQuestions(query) {
+            // ── Filter questions based on search and company count threshold ──
+            function filterQuestions(query, threshold) {
                 const lower = query.toLowerCase().trim();
                 const items = document.querySelectorAll('.question-item');
                 let visibleCount = 0;
@@ -4216,13 +4246,17 @@
                     const text = el.querySelector('.question-text')?.textContent?.toLowerCase() || '';
                     const topicGroup = el.closest('.topic-group');
                     const topic = topicGroup?.dataset?.topic?.toLowerCase() || '';
-                    const compTags = el.closest('.question-item')?.nextElementSibling?.querySelectorAll('.company-tag') || [];
+                    const compTags = el.closest('.question-item')?.nextElementSibling?.querySelectorAll('.company-tag') ||
+                        [];
                     let compMatch = false;
                     compTags.forEach(tag => {
                         if (tag.textContent.toLowerCase().includes(lower)) compMatch = true;
                     });
-                    const match = text.includes(lower) || topic.includes(lower) || compMatch;
-                    if (match) {
+                    const count = parseInt(el.dataset.count) || 0;
+                    const matchSearch = text.includes(lower) || topic.includes(lower) || compMatch;
+                    const matchThreshold = (threshold === 0) || (count >= threshold);
+                    const visible = matchSearch && matchThreshold;
+                    if (visible) {
                         el.style.display = 'flex';
                         visibleCount++;
                     } else {
@@ -4270,9 +4304,49 @@
                 document.getElementById('visibleCount').textContent = visibleCount;
             }
 
+            // ── Toggle topic ──
+            window.toggleTopic = function(header) {
+                const body = header.nextElementSibling;
+                const icon = header.querySelector('.toggle-icon i');
+                const chevron = header.querySelector('.topic-title i');
+                if (body.classList.contains('open')) {
+                    body.classList.remove('open');
+                    icon.className = 'fas fa-chevron-right';
+                    chevron.style.transform = 'rotate(0deg)';
+                } else {
+                    body.classList.add('open');
+                    icon.className = 'fas fa-chevron-down';
+                    chevron.style.transform = 'rotate(90deg)';
+                }
+            };
+
+            // ── Toggle companies ──
+            window.toggleCompanies = function(btn) {
+                const item = btn.closest('.question-item');
+                const list = item.nextElementSibling;
+                if (!list || !list.classList.contains('company-list')) return;
+                const isOpen = list.classList.contains('open');
+                if (isOpen) {
+                    list.classList.remove('open');
+                    btn.classList.remove('active');
+                } else {
+                    list.classList.add('open');
+                    btn.classList.add('active');
+                }
+            };
+
             // ── Search listener ──
             searchInput.addEventListener('input', function() {
-                filterQuestions(this.value);
+                const query = this.value.trim();
+                const threshold = parseInt(filterSelect.value) || 0;
+                filterQuestions(query, threshold);
+            });
+
+            // ── Filter select listener ──
+            filterSelect.addEventListener('change', function() {
+                const threshold = parseInt(this.value) || 0;
+                const query = searchInput.value.trim();
+                filterQuestions(query, threshold);
             });
 
             // ── Scroll to top ──
@@ -4291,12 +4365,10 @@
             const flat = flattenData();
             render(flat);
 
-            // If no search, make sure all topic bodies are open by default (already open)
-            // But user can toggle manually
-
-            // Also re-apply search if any
-            if (searchInput.value.trim()) {
-                filterQuestions(searchInput.value.trim());
+            // If any initial filter set, apply
+            const initialThreshold = parseInt(filterSelect.value) || 0;
+            if (initialThreshold > 0) {
+                filterQuestions('', initialThreshold);
             }
 
             // keyboard shortcut: focus search on Ctrl+/ or Cmd+/
